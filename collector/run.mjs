@@ -1,4 +1,4 @@
-import {readNews,readMaintenance,renderTable} from './scraper.mjs';
+import {readNews,readMaintenance} from './scraper.mjs';
 import {week,DAY} from '../shared/core.mjs';
 const base=new URL(process.env.WORKER_URL||'https://invalid.invalid');
 if(base.protocol!=='https:'||base.hostname==='invalid.invalid'||base.username||base.password) throw new Error('Set WORKER_URL to the deployed HTTPS Worker URL');
@@ -15,10 +15,7 @@ for(const offset of [0,7*DAY]) {
   const anchor=Date.now()+offset,range=week(anchor),key=`news:${range.from}`;
   try {
     const events=await readNews(anchor),checkedAt=Date.now();
-    const accepted=await upload('/ingest',{kind:'news',range,checkedAt,events});
-    // Both weeks need an image: on-demand /tuan and /tuantoi, plus the Sunday schedule.
-    const png=await renderTable({range,events,checkedAt});
-    await upload(`/image?week=${range.from}&revision=${accepted.revision}`,png,'PUT','image/png');
+    await upload('/ingest',{kind:'news',range,checkedAt,events});
     console.log('Updated',key,'groups:',events.length);
   } catch(e) {
     failed=true;console.error('Failed source:',key,String(e.message).slice(0,300));
