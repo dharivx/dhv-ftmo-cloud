@@ -16,11 +16,9 @@ for(const offset of [0,7*DAY]) {
   try {
     const events=await readNews(anchor),checkedAt=Date.now();
     const accepted=await upload('/ingest',{kind:'news',range,checkedAt,events});
-    // Generate images for upcoming weeks only. Never send anything to Telegram from GitHub.
-    if(range.start>checkedAt) {
-      const png=await renderTable({range,events,checkedAt});
-      await upload(`/image?week=${range.from}&revision=${accepted.revision}`,png,'PUT','image/png');
-    }
+    // Both weeks need an image: on-demand /tuan and /tuantoi, plus the Sunday schedule.
+    const png=await renderTable({range,events,checkedAt});
+    await upload(`/image?week=${range.from}&revision=${accepted.revision}`,png,'PUT','image/png');
     console.log('Updated',key,'groups:',events.length);
   } catch(e) {
     failed=true;console.error('Failed source:',key,String(e.message).slice(0,300));
