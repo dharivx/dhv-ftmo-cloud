@@ -1,0 +1,35 @@
+name: Read FTMO calendar
+on:
+  schedule:
+    # UTC: 07:17, 11:17, 15:17, 19:17, 23:17, 03:17 in Vietnam.
+    - cron: '17 */4 * * *'
+    # Extra Sunday 18:17 Vietnam, ahead of the 19:00 weekly table.
+    - cron: '17 11 * * 0'
+  workflow_dispatch:
+    inputs:
+      test_telegram:
+        description: 'Send one Telegram connection test after collecting'
+        type: boolean
+        default: false
+permissions:
+  contents: read
+concurrency:
+  group: ftmo-collector
+  cancel-in-progress: false
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    container:
+      image: mcr.microsoft.com/playwright:v1.63.0-noble
+      options: --ipc=host
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pinned browser client
+        run: npm install --prefix collector --omit=dev --ignore-scripts
+      - name: Read FTMO and upload to Cloudflare
+        run: node collector/run.mjs
+        env:
+          WORKER_URL: ${{ secrets.WORKER_URL }}
+          INGEST_SECRET: ${{ secrets.INGEST_SECRET }}
+          TEST_TELEGRAM: ${{ inputs.test_telegram }}
