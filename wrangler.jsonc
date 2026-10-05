@@ -1,0 +1,16 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "dhv-ftmo-alerts",
+  "main": "worker/index.mjs",
+  "compatibility_date": "2026-09-19",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+  "triggers": {"crons": ["* * * * *"]},
+  "d1_databases": [{
+    "binding": "DB",
+    "database_name": "dhv-ftmo",
+    "database_id": "1df60f43-fe29-42d0-9f01-da17bab1e232"
+  }],
+  "kv_namespaces": [{"binding": "IMAGES", "id": "1ebb49b52ae74a609e6d9832be7eaf14"}],
+  "vars": {"ALERT_MINUTES": "90"}
+}

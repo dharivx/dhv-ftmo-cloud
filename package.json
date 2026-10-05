@@ -1,0 +1,9 @@
+{
+  "name": "dhv-ftmo-cloud",
+  "version": "0.3.0",
+  "private": true,
+  "type": "module",
+  "scripts": {"test": "node --test", "deploy": "wrangler deploy", "collect": "node collector/run.mjs"},
+  "devDependencies": {"wrangler": "^4.0.0"},
+  "engines": {"node": ">=22"}
+}
